@@ -13,43 +13,87 @@ gem 'accc'
 And then execute:
 
 ```bash
-$ bundle install
+bundle install
 ```
 
 Or install it yourself as:
 
 ```bash
-$ gem install accc
+gem install accc
 ```
 
 ## Requirements
 
 - Ruby 3.3.6 or higher
+- Autodesk APS (formerly Forge) credentials
+  - Client ID
+  - Client Secret
+  - Registered callback URL
 
 ## Usage
 
-First, configure the client with your API key:
+### Configuration
+
+First, configure the client with your Autodesk APS credentials:
 
 ```ruby
 ACCC.configure do |config|
-  config.api_key = 'your_api_key'
-  # Optionally override the base URL
-  # config.base_url = 'https://developer.api.autodesk.com'
+  config.client_id = 'your_client_id'
+  config.client_secret = 'your_client_secret'
+  config.callback_url = 'your_callback_url'
+  config.scope = 'data:read'  # Add required scopes
 end
+```
+
+### Authentication
+
+The gem uses OAuth 2.0 with 3-legged authentication. See [Authentication Documentation](lib/accc/endpoints/README.md) for detailed information.
+
+Basic example:
+
+```ruby
+# Generate authorization URL
+auth = ACCC::Endpoints::Auth.new
+redirect_to auth.authorization_url
+
+# Handle callback
+auth = ACCC::Endpoints::Auth.new
+tokens = auth.exchange_code(params[:code])
 ```
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
+
+### Running the Example App
+
+The gem includes a dummy Sinatra application that demonstrates the authentication flow:
+
+1. Configure your credentials in `dummy/.env`:
+
+```ascii
+  CLIENT_ID=your_client_id
+  CLIENT_SECRET=your_client_secret
+```
+
+2. Run the application:
+
+```bash
+  cd dummy
+  bundle install
+  bundle exec rackup -p 3000
+```
+
+3. Visit http://localhost:3000 and click "Login with Autodesk"
 
 ## Testing
 
 The test suite uses RSpec. To run all tests:
 
 ```bash
-$ bundle exec rspec
+bundle exec rspec
 ```
 
 ## Contributing
