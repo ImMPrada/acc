@@ -18,3 +18,7 @@ group :test do
   gem 'vcr', '~> 6.1'
   gem 'webmock', '~> 3.18'
 end
+
+group :development, :test do
+  gem 'dotenv'
+end

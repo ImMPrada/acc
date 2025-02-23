@@ -1,13 +1,22 @@
 require 'bundler/setup'
+require 'dotenv'
+
+# Set test environment variables
+ENV['CLIENT_ID'] = 'test_client_id'
+ENV['CLIENT_SECRET'] = 'test_client_secret'
+
 require 'accc'
 require 'webmock/rspec'
 require 'vcr'
+
+Dotenv.load
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
-  config.filter_sensitive_data('<API_KEY>') { ACCC.configuration&.api_key }
+  config.filter_sensitive_data('<CLIENT_ID>') { ENV['CLIENT_ID'] }
+  config.filter_sensitive_data('<CLIENT_SECRET>') { ENV['CLIENT_SECRET'] }
 end
 
 RSpec.configure do |config|
@@ -23,7 +32,7 @@ RSpec.configure do |config|
 
   config.before do
     ACCC.configure do |c|
-      c.api_key = 'test_api_key'
+      # La configuración se tomará automáticamente de las variables de entorno
     end
   end
 end

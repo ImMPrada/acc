@@ -1,17 +1,24 @@
+require 'spec_helper'
+
 RSpec.describe ACCC do
-  it 'has a version number' do
-    expect(ACCC::VERSION).not_to be_nil
+  describe 'version' do
+    it 'has a version number' do
+      expect(ACCC::VERSION).not_to be nil
+    end
   end
 
   describe '.configure' do
     it 'allows setting configuration' do
-      api_key = 'test_key'
+      client_id = 'test_client_id'
+      client_secret = 'test_client_secret'
 
-      described_class.configure do |config|
-        config.api_key = api_key
+      ACCC.configure do |config|
+        config.client_id = client_id
+        config.client_secret = client_secret
       end
 
-      expect(described_class.configuration.api_key).to eq(api_key)
+      expect(ACCC.configuration.client_id).to eq(client_id)
+      expect(ACCC.configuration.client_secret).to eq(client_secret)
     end
   end
 end
