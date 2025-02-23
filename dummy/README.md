@@ -1,7 +1,7 @@
 # ACCC Dummy Application
 
-This is a simple Sinatra application that demonstrates the usage of the ACCC gem for
-authentication with Autodesk Construction Cloud API.
+This is a simple Sinatra application that demonstrates the usage of the ACCC gem
+for authentication with Autodesk Construction Cloud API.
 
 ## Setup
 
@@ -17,28 +17,28 @@ SCOPE=data:read
 Note: Make sure the `CALLBACK_URL` matches the callback URL configured in your
 Autodesk APS application settings.
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 bundle install
 ```
 
-3. Run the application:
+1. Run the application:
 
 ```bash
 bundle exec rackup -p 3000
 ```
 
-The application will be available at http://localhost:3000
+The application will be available at `http://localhost:3000`
 
 ## Features
 
 ### Authentication Flow
 
-1. Visit the home page (http://localhost:3000)
-2. Click "Login with Autodesk" to start the OAuth flow
-3. You'll be redirected to Autodesk's login page
-4. After successful authentication, you'll be redirected back to the application
+1. Visit the home page (`http://localhost:3000`)
+1. Click "Login with Autodesk" to start the OAuth flow
+1. You'll be redirected to Autodesk's login page
+1. After successful authentication, you'll be redirected back to the application
 
 ### Token Management
 
@@ -61,8 +61,8 @@ The application demonstrates proper error handling for various scenarios:
 ### Testing Token Refresh
 
 1. Login to get initial tokens
-2. Wait for the access token to expire (typically 1 hour)
-3. Try to refresh tokens using the "Refresh Tokens" link
+1. Wait for the access token to expire (typically 1 hour)
+1. Try to refresh tokens using the "Refresh Tokens" link
 
 ### Testing Error Handling
 
@@ -95,4 +95,4 @@ suitable for production use:
 - Tokens are stored in the session
 - Error messages might be too verbose
 - No CSRF protection
-- No secure cookie configuration 
+- No secure cookie configuration
