@@ -1,19 +1,19 @@
-require "bundler/setup"
-require "accc"
-require "sinatra"
+require 'bundler/setup'
+require 'accc'
+require 'sinatra'
 
 class DummyApp < Sinatra::Base
-  get "/" do
-    "ACCC Dummy App"
+  get '/' do
+    'ACCC Dummy App'
   end
 
-  get "/test" do
+  get '/test' do
     ACCC.configure do |config|
-      config.api_key = ENV["ACCC_API_KEY"]
+      config.api_key = ENV.fetch('ACCC_API_KEY', nil)
     end
-    
-    "Configuration loaded!"
+
+    'Configuration loaded!'
   end
 end
 
-run DummyApp 
+run DummyApp
