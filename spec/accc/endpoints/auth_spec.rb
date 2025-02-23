@@ -123,6 +123,37 @@ RSpec.describe ACCC::Endpoints::Auth do
       end
     end
 
+    context 'when the response is not valid JSON' do
+      let(:invalid_json_code) { 'invalid_json' }
+
+      it 'raises an AuthError',
+         vcr: { cassette_name: 'auth/exchange_code/invalid_json' } do
+        expect { auth.exchange_code(invalid_json_code) }
+          .to raise_error(ACCC::Errors::AuthError, /Invalid error response/)
+      end
+    end
+
+    context 'when the server returns a 500 error' do
+      let(:server_error_code) { 'server_error' }
+
+      it 'raises an AuthError',
+         vcr: { cassette_name: 'auth/exchange_code/server_error' } do
+        expect { auth.exchange_code(server_error_code) }
+          .to raise_error(ACCC::Errors::AuthError, /Request failed/)
+      end
+    end
+
+    context 'when the response is missing required fields' do
+      let(:incomplete_response_code) { 'incomplete' }
+
+      it 'returns the incomplete response without raising error',
+         vcr: { cassette_name: 'auth/exchange_code/incomplete_response' } do
+        result = auth.exchange_code(incomplete_response_code)
+        expect(result['access_token']).to be_nil
+        expect(result['refresh_token']).to be_nil
+      end
+    end
+
     context 'when access token has expired' do
       let(:expired_token) { 'expired_token' }
 
