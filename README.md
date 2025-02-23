@@ -13,13 +13,13 @@ gem 'accc'
 And then execute:
 
 ```bash
-$ bundle install
+bundle install
 ```
 
 Or install it yourself as:
 
 ```bash
-$ gem install accc
+gem install accc
 ```
 
 ## Requirements
@@ -72,17 +72,19 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 The gem includes a dummy Sinatra application that demonstrates the authentication flow:
 
 1. Configure your credentials in `dummy/.env`:
-   ```
-   CLIENT_ID=your_client_id
-   CLIENT_SECRET=your_client_secret
-   ```
+
+```ascii
+  CLIENT_ID=your_client_id
+  CLIENT_SECRET=your_client_secret
+```
 
 2. Run the application:
-   ```bash
-   cd dummy
-   bundle install
-   bundle exec rackup -p 3000
-   ```
+
+```bash
+  cd dummy
+  bundle install
+  bundle exec rackup -p 3000
+```
 
 3. Visit http://localhost:3000 and click "Login with Autodesk"
 
@@ -91,7 +93,7 @@ The gem includes a dummy Sinatra application that demonstrates the authenticatio
 The test suite uses RSpec. To run all tests:
 
 ```bash
-$ bundle exec rspec
+bundle exec rspec
 ```
 
 ## Contributing
