@@ -20,8 +20,21 @@ class DummyApp < Sinatra::Base
   enable :sessions
 
   get '/' do
-    '<a href="/auth">Login with Autodesk</a><br>' \
-      "Callback URL configured: #{CALLBACK_URL}"
+    if session[:access_token]
+      <<~HTML
+        <h1>Authenticated!</h1>
+        <p>Access Token: #{session[:access_token]}</p>
+        <p>Refresh Token: #{session[:refresh_token]}</p>
+        <p><a href="/refresh">Refresh Tokens</a></p>
+        <p><a href="/logout">Logout</a></p>
+      HTML
+    else
+      <<~HTML
+        <h1>Welcome</h1>
+        <p><a href="/auth">Login with Autodesk</a></p>
+        <p>Callback URL configured: #{CALLBACK_URL}</p>
+      HTML
+    end
   end
 
   get '/auth' do
@@ -33,13 +46,32 @@ class DummyApp < Sinatra::Base
 
   get '/autodesk/callback' do
     auth = ACCC::Endpoints::Auth.new
-    tokens = auth.exchange_code(params[:code])
-    session[:access_token] = tokens['access_token']
-    session[:refresh_token] = tokens['refresh_token']
+    access_token = auth.exchange_code(params[:code])
+    session[:access_token] = access_token
+    session[:refresh_token] = auth.refresh_token
 
-    "Authentication successful!<br>Access Token: #{tokens['access_token']}<br>Refresh Token: #{tokens['refresh_token']}"
-  rescue ACCC::Errors::Error => e
+    redirect '/'
+  rescue ACCC::Errors::AuthError => e
     "Authentication failed: #{e.message}"
+  end
+
+  get '/refresh' do
+    return redirect '/auth' unless session[:refresh_token]
+
+    auth = ACCC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+    access_token = auth.refresh_tokens
+    session[:access_token] = access_token
+    session[:refresh_token] = auth.refresh_token
+
+    redirect '/'
+  rescue ACCC::Errors::AuthError => e
+    session.clear
+    "Token refresh failed: #{e.message}<br><a href='/auth'>Login again</a>"
+  end
+
+  get '/logout' do
+    session.clear
+    redirect '/'
   end
 end
 
