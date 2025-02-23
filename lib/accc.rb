@@ -1,4 +1,3 @@
-require 'zeitwerk'
 require 'faraday'
 require 'faraday/multipart'
 require 'uri'
@@ -6,7 +5,7 @@ require 'json'
 
 module ACCC
   module Errors
-    class Error < StandardError; end
+    class AuthError < StandardError; end
   end
 
   module Endpoints; end
@@ -25,15 +24,21 @@ module ACCC
   end
 end
 
+# Load base files first
 require_relative 'accc/version'
 require_relative 'accc/configuration'
-require_relative 'accc/errors/access_token_error'
-require_relative 'accc/errors/refresh_token_error'
-require_relative 'accc/errors/missing_scope_error'
-require_relative 'accc/endpoints/response_handler'
-require_relative 'accc/endpoints/auth'
 
-# Initialize the loader
-loader = Zeitwerk::Loader.for_gem
-loader.push_dir("#{__dir__}/accc")
-loader.setup
+# Load modules/dependencies first
+require_relative 'accc/endpoints/response_handler'
+
+# Load error classes
+Dir.glob(File.join(__dir__, 'accc', 'errors', '*.rb')).sort.each do |file|
+  require_relative file.sub("#{__dir__}/", '')
+end
+
+# Load endpoints last
+Dir.glob(File.join(__dir__, 'accc', 'endpoints', '*.rb')).sort.each do |file|
+  next if file.end_with?('response_handler.rb') # Skip already loaded
+
+  require_relative file.sub("#{__dir__}/", '')
+end

@@ -10,7 +10,7 @@ module ACCC
         when 401
           handle_unauthorized_error(response)
         else
-          raise ACCC::Errors::Error, "Request failed: #{response.body}"
+          raise ACCC::Errors::AuthError, "Request failed: #{response.body}"
         end
       end
 
@@ -18,14 +18,14 @@ module ACCC
         error_body = JSON.parse(response.body)
         case error_body['error']
         when 'token_expired'
-          raise ACCC::Errors::AccessTokenExpiredError
+          raise ACCC::Errors::AccessTokenError
         when 'refresh_token_expired'
-          raise ACCC::Errors::RefreshTokenExpiredError
+          raise ACCC::Errors::RefreshTokenError
         else
-          raise ACCC::Errors::Error, "Authentication failed: #{error_body['error_description']}"
+          raise ACCC::Errors::AuthError, "Authentication failed: #{error_body['error_description']}"
         end
       rescue JSON::ParserError
-        raise ACCC::Errors::Error, "Invalid error response: #{response.body}"
+        raise ACCC::Errors::AuthError, "Invalid error response: #{response.body}"
       end
     end
   end

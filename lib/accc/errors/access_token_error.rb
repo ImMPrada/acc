@@ -1,6 +1,6 @@
 module ACCC
   module Errors
-    class AccessTokenExpiredError < StandardError
+    class AccessTokenError < AuthError
       def message
         'The access token has expired. Please refresh the token.'
       end

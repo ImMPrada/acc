@@ -1,6 +1,6 @@
 module ACCC
   module Errors
-    class MissingScopeError < StandardError
+    class MissingScopeError < AuthError
       def initialize(msg = 'Scope must be configured')
         super
       end

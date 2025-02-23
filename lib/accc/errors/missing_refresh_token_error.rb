@@ -1,6 +1,6 @@
 module ACCC
   module Errors
-    class MissingRefreshTokenError < StandardError
+    class MissingRefreshTokenError < AuthError
       def initialize(msg = 'Refresh token is required to perform this operation')
         super
       end

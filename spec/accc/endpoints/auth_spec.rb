@@ -119,27 +119,27 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises an error with invalid grant message',
          vcr: { cassette_name: 'auth/exchange_code/invalid_grant' } do
         expect { auth.exchange_code(invalid_code) }
-          .to raise_error(ACCC::Errors::Error, /Invalid authorization code/)
+          .to raise_error(ACCC::Errors::AuthError, /Invalid authorization code/)
       end
     end
 
     context 'when access token has expired' do
       let(:expired_token) { 'expired_token' }
 
-      it 'raises an AccessTokenExpiredError',
+      it 'raises an AccessTokenError',
          vcr: { cassette_name: 'auth/exchange_code/token_expired' } do
         expect { auth.exchange_code(expired_token) }
-          .to raise_error(ACCC::Errors::AccessTokenExpiredError)
+          .to raise_error(ACCC::Errors::AccessTokenError)
       end
     end
 
     context 'when refresh token has expired' do
       let(:expired_refresh_token) { 'expired_refresh_token' }
 
-      it 'raises a RefreshTokenExpiredError',
+      it 'raises a RefreshTokenError',
          vcr: { cassette_name: 'auth/exchange_code/refresh_token_expired' } do
         expect { auth.exchange_code(expired_refresh_token) }
-          .to raise_error(ACCC::Errors::RefreshTokenExpiredError)
+          .to raise_error(ACCC::Errors::RefreshTokenError)
       end
     end
   end
