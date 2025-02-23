@@ -25,10 +25,11 @@ gem install accc
 ## Requirements
 
 * Ruby 3.3.6 or higher
-* Autodesk APS (formerly Forge) credentials
-* Client ID
-* Client Secret
-* Registered callback URL
+* Autodesk APS (formerly Forge) credentials:
+  * Client ID
+  * Client Secret
+  * Registered callback URL
+  * Appropriate scopes configured
 
 ## Usage
 
@@ -38,29 +39,89 @@ First, configure the client with your Autodesk APS credentials:
 
 ```ruby
 ACCC.configure do |config|
-  config.client_id = 'your_client_id'
-  config.client_secret = 'your_client_secret'
-  config.callback_url = 'your_callback_url'
+  config.client_id = ENV['CLIENT_ID']
+  config.client_secret = ENV['CLIENT_SECRET']
+  config.callback_url = ENV['CALLBACK_URL']
   config.scope = 'data:read'  # Add required scopes
 end
 ```
 
-### Authentication
+### Authentication Flow
 
-The gem uses OAuth 2.0 with 3-legged authentication. See
-[Authentication Documentation](lib/accc/endpoints/README.md) for detailed information.
+The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 
-Basic example:
+1. Generate the authorization URL:
+
+   ```ruby
+   auth = ACCC::Endpoints::Auth.new
+   authorization_url = auth.authorization_url
+   redirect_to authorization_url
+   ```
+
+2. Handle the callback:
+
+   ```ruby
+   def oauth_callback
+     auth = ACCC::Endpoints::Auth.new
+     access_token = auth.exchange_code(params[:code])
+     # Store tokens securely
+     session[:access_token] = access_token
+     session[:refresh_token] = auth.refresh_token
+   rescue ACCC::Errors::AuthError => e
+     # Handle authentication errors
+     logger.error "Authentication failed: #{e.message}"
+     redirect_to auth_failed_path
+   end
+   ```
+
+3. Refresh expired tokens:
+
+   ```ruby
+   def refresh_tokens
+     auth = ACCC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+     access_token = auth.refresh_tokens
+     # Update stored tokens
+     session[:access_token] = access_token
+     session[:refresh_token] = auth.refresh_token
+   rescue ACCC::Errors::AuthError => e
+     # Handle refresh errors
+     logger.error "Token refresh failed: #{e.message}"
+     redirect_to login_path
+   end
+   ```
+
+### Error Handling
+
+The gem provides specific error classes for different scenarios:
 
 ```ruby
-# Generate authorization URL
-auth = ACCC::Endpoints::Auth.new
-redirect_to auth.authorization_url
-
-# Handle callback
-auth = ACCC::Endpoints::Auth.new
-tokens = auth.exchange_code(params[:code])
+begin
+  auth.exchange_code(code)
+rescue ACCC::Errors::MissingScopeError
+  # Handle missing scope configuration
+rescue ACCC::Errors::AccessTokenError
+  # Handle expired access token
+rescue ACCC::Errors::RefreshTokenError
+  # Handle expired refresh token
+rescue ACCC::Errors::AuthError => e
+  # Handle other authentication errors
+end
 ```
+
+### Available Scopes
+
+Common scopes include:
+
+* `data:read` - Read access to BIM 360 data
+* `data:write` - Write access to BIM 360 data
+* `data:create` - Create new items in BIM 360
+* `account:read` - Read access to account information
+* `account:write` - Write access to account information
+
+## Example Application
+
+The gem includes a dummy Sinatra application that demonstrates the complete
+authentication flow. See [dummy/README.md](dummy/README.md) for details.
 
 ## Development
 
@@ -69,29 +130,6 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run
 prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
-
-### Running the Example App
-
-The gem includes a dummy Sinatra application that demonstrates the authentication
-flow:
-
-1. Configure your credentials in `dummy/.env`:
-
-```ascii
-CLIENT_ID=your_client_id
-CLIENT_SECRET=your_client_secret
-```
-
-1. Run the application:
-
-```bash
-cd dummy
-bundle install
-bundle exec rackup -p 3000
-```
-
-1. Visit [http://localhost:3000](http://localhost:3000) and click "Login with
-   Autodesk"
 
 ## Testing
 
@@ -104,10 +142,10 @@ bundle exec rspec
 ## Contributing
 
 1. Fork it
-1. Create your feature branch (`git checkout -b feature/my-new-feature`)
-1. Commit your changes (`git commit -am 'Add some feature'`)
-1. Push to the branch (`git push origin feature/my-new-feature`)
-1. Create new Pull Request
+2. Create your feature branch (`git checkout -b feature/my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature/my-new-feature`)
+5. Create new Pull Request
 
 Bug reports and pull requests are welcome on GitHub.
 
