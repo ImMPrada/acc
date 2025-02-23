@@ -14,7 +14,7 @@ module ACCC
       end
 
       def authorization_url
-        raise ArgumentError, 'Scope must be configured' unless ACCC.configuration.scope
+        raise Errors::MissingScopeError, 'Scope must be configured' unless ACCC.configuration.scope
 
         params = {
           client_id: ACCC.configuration.client_id,
@@ -38,10 +38,31 @@ module ACCC
           }
         )
 
+        handle_token_response(response)
+      end
+
+      def refresh_tokens
+        raise Errors::MissingRefreshTokenError unless @refresh_token
+
+        response = Faraday.post(
+          "#{ACCC.configuration.base_url}#{TOKEN_ENDPOINT}",
+          {
+            client_id: ACCC.configuration.client_id,
+            client_secret: ACCC.configuration.client_secret,
+            grant_type: 'refresh_token',
+            refresh_token: @refresh_token
+          }
+        )
+
+        handle_token_response(response)
+      end
+
+      private
+
+      def handle_token_response(response)
         tokens = handle_json_response(response)
-        @access_token = tokens['access_token']
         @refresh_token = tokens['refresh_token']
-        tokens
+        @access_token = tokens['access_token']
       end
     end
   end

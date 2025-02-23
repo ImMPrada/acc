@@ -1,6 +1,6 @@
 module ACCC
   module Errors
-    class RefreshTokenExpiredError < StandardError
+    class RefreshTokenError < AuthError
       def message
         'The refresh token has expired. User needs to re-authenticate.'
       end

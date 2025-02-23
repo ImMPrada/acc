@@ -1,16 +1,31 @@
-require 'zeitwerk'
 require 'faraday'
 require 'faraday/multipart'
 require 'uri'
 require 'json'
 
+# Load base files first
+require_relative 'accc/version'
+require_relative 'accc/configuration'
+
+# Load error classes
+require_relative 'accc/errors/auth_error'
+Dir.glob(File.join(__dir__, 'accc', 'errors', '*.rb')).each do |file|
+  next if file.end_with?('auth_error.rb') # Skip already loaded
+
+  require_relative file.sub("#{__dir__}/", '')
+end
+
+# Load modules/dependencies first
+require_relative 'accc/endpoints/response_handler'
+
+# Load endpoints last
+Dir.glob(File.join(__dir__, 'accc', 'endpoints', '*.rb')).each do |file|
+  next if file.end_with?('response_handler.rb') # Skip already loaded
+
+  require_relative file.sub("#{__dir__}/", '')
+end
+
 module ACCC
-  module Errors
-    class Error < StandardError; end
-  end
-
-  module Endpoints; end
-
   @configuration = nil
 
   class << self
@@ -24,15 +39,3 @@ module ACCC
     yield(@configuration) if block_given?
   end
 end
-
-require_relative 'accc/version'
-require_relative 'accc/configuration'
-require_relative 'accc/errors/access_token_error'
-require_relative 'accc/errors/refresh_token_error'
-require_relative 'accc/endpoints/response_handler'
-require_relative 'accc/endpoints/auth'
-
-# Initialize the loader
-loader = Zeitwerk::Loader.for_gem
-loader.push_dir("#{__dir__}/accc")
-loader.setup

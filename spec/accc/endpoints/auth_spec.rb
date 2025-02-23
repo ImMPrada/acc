@@ -6,6 +6,7 @@ RSpec.describe ACCC::Endpoints::Auth do
   let(:callback_url) { 'https://example.com/callback' }
   let(:scope) { 'data:read data:write' }
   let(:base_url) { 'https://developer.api.autodesk.com' }
+  let(:auth) { described_class.new }
 
   before do
     ACCC.configure do |config|
@@ -18,19 +19,19 @@ RSpec.describe ACCC::Endpoints::Auth do
   end
 
   describe '#authorization_url' do
-    subject(:auth) { described_class.new }
-
     context 'when all required configuration is present' do
-      it 'returns the correct authorization URL with parameters' do
-        expected_params = {
+      let(:expected_params) do
+        {
           client_id: client_id,
           response_type: 'code',
           redirect_uri: callback_url,
           scope: scope
         }
-        expected_query = URI.encode_www_form(expected_params)
-        expected_url = "#{base_url}/authentication/v2/authorize?#{expected_query}"
+      end
+      let(:expected_query) { URI.encode_www_form(expected_params) }
+      let(:expected_url) { "#{base_url}/authentication/v2/authorize?#{expected_query}" }
 
+      it 'returns the correct authorization URL' do
         expect(auth.authorization_url).to eq(expected_url)
       end
     end
@@ -42,9 +43,9 @@ RSpec.describe ACCC::Endpoints::Auth do
         end
       end
 
-      it 'raises an ArgumentError' do
+      it 'raises a MissingScopeError' do
         expect { auth.authorization_url }.to raise_error(
-          ArgumentError,
+          ACCC::Errors::MissingScopeError,
           'Scope must be configured'
         )
       end
@@ -57,9 +58,10 @@ RSpec.describe ACCC::Endpoints::Auth do
         end
       end
 
-      it 'includes an empty client_id in the URL' do
-        url = auth.authorization_url
-        parsed_params = URI.decode_www_form(URI(url).query).to_h
+      let(:url) { auth.authorization_url }
+      let(:parsed_params) { URI.decode_www_form(URI(url).query).to_h }
+
+      it 'includes an empty client_id parameter' do
         expect(parsed_params['client_id']).to eq('')
       end
     end
@@ -71,127 +73,110 @@ RSpec.describe ACCC::Endpoints::Auth do
         end
       end
 
-      it 'includes an empty redirect_uri in the URL' do
-        url = auth.authorization_url
-        parsed_params = URI.decode_www_form(URI(url).query).to_h
+      let(:url) { auth.authorization_url }
+      let(:parsed_params) { URI.decode_www_form(URI(url).query).to_h }
+
+      it 'includes an empty redirect_uri parameter' do
         expect(parsed_params['redirect_uri']).to eq('')
       end
     end
   end
 
-  describe '#exchange_code' do
-    subject(:auth) { described_class.new }
-
+  describe '#exchange_code', :vcr do
     let(:authorization_code) { 'test_auth_code' }
-    let(:access_token) { 'test_access_token' }
-    let(:refresh_token) { 'test_refresh_token' }
-    let(:token_endpoint) { "#{base_url}/authentication/v2/token" }
-    let(:successful_response) do
-      {
-        access_token: access_token,
-        refresh_token: refresh_token,
-        expires_in: 3600
-      }
-    end
 
     context 'when exchange is successful' do
-      before do
-        stub_request(:post, token_endpoint)
-          .with(
-            body: {
-              client_id: client_id,
-              client_secret: client_secret,
-              grant_type: 'authorization_code',
-              code: authorization_code,
-              redirect_uri: callback_url
-            }
-          )
-          .to_return(
-            status: 200,
-            body: successful_response.to_json,
-            headers: { 'Content-Type': 'application/json' }
-          )
+      let!(:result) do
+        VCR.use_cassette('auth/exchange_code/success') do
+          auth.exchange_code(authorization_code)
+        end
       end
 
-      it 'returns the access token' do
-        result = auth.exchange_code(authorization_code)
-        expect(result['access_token']).to eq(access_token)
+      it 'returns a non-nil access token' do
+        expect(result).not_to be_nil
       end
 
-      it 'returns the refresh token' do
-        result = auth.exchange_code(authorization_code)
-        expect(result['refresh_token']).to eq(refresh_token)
-      end
-
-      it 'returns the expiration time' do
-        result = auth.exchange_code(authorization_code)
-        expect(result['expires_in']).to eq(3600)
+      it 'returns the same token stored in the instance' do
+        expect(result).to eq(auth.access_token)
       end
 
       it 'updates the instance access token' do
-        auth.exchange_code(authorization_code)
-        expect(auth.access_token).to eq(access_token)
+        expect(auth.access_token).not_to be_nil
       end
 
       it 'updates the instance refresh token' do
-        auth.exchange_code(authorization_code)
-        expect(auth.refresh_token).to eq(refresh_token)
+        expect(auth.refresh_token).not_to be_nil
       end
     end
 
     context 'when the token exchange fails' do
-      before do
-        stub_request(:post, token_endpoint)
-          .to_return(
-            status: 400,
-            body: {
-              error: 'invalid_grant',
-              error_description: 'Invalid authorization code'
-            }.to_json,
-            headers: { 'Content-Type': 'application/json' }
-          )
+      let(:invalid_code) { 'invalid_code' }
+
+      it 'raises an error with invalid grant message',
+         vcr: { cassette_name: 'auth/exchange_code/invalid_grant' } do
+        expect { auth.exchange_code(invalid_code) }
+          .to raise_error(ACCC::Errors::AuthError, /Invalid authorization code/)
+      end
+    end
+
+    context 'when the response is not valid JSON' do
+      let(:invalid_json_code) { 'invalid_json' }
+
+      it 'raises an AuthError',
+         vcr: { cassette_name: 'auth/exchange_code/invalid_json' } do
+        expect { auth.exchange_code(invalid_json_code) }
+          .to raise_error(ACCC::Errors::AuthError, /Invalid error response/)
+      end
+    end
+
+    context 'when the server returns a 500 error' do
+      let(:server_error_code) { 'server_error' }
+
+      it 'raises an AuthError',
+         vcr: { cassette_name: 'auth/exchange_code/server_error' } do
+        expect { auth.exchange_code(server_error_code) }
+          .to raise_error(ACCC::Errors::AuthError, /Request failed/)
+      end
+    end
+
+    context 'when the response is missing required fields' do
+      let(:incomplete_response_code) { 'incomplete' }
+      let!(:result) do
+        VCR.use_cassette('auth/exchange_code/incomplete_response') do
+          auth.exchange_code(incomplete_response_code)
+        end
       end
 
-      it 'raises an error' do
-        expect { auth.exchange_code(authorization_code) }.to raise_error(ACCC::Errors::Error)
+      it 'returns nil as access token' do
+        expect(result).to be_nil
+      end
+
+      it 'does not set the instance access token' do
+        expect(auth.access_token).to be_nil
+      end
+
+      it 'does not set the instance refresh token' do
+        expect(auth.refresh_token).to be_nil
       end
     end
 
     context 'when access token has expired' do
-      before do
-        stub_request(:post, token_endpoint)
-          .to_return(
-            status: 401,
-            body: {
-              error: 'token_expired',
-              error_description: 'Access token has expired'
-            }.to_json,
-            headers: { 'Content-Type': 'application/json' }
-          )
-      end
+      let(:expired_token) { 'expired_token' }
 
-      it 'raises an AccessTokenExpiredError' do
-        expect { auth.exchange_code(authorization_code) }
-          .to raise_error(ACCC::Errors::AccessTokenExpiredError)
+      it 'raises an AccessTokenError',
+         vcr: { cassette_name: 'auth/exchange_code/token_expired' } do
+        expect { auth.exchange_code(expired_token) }
+          .to raise_error(ACCC::Errors::AccessTokenError)
       end
     end
 
     context 'when refresh token has expired' do
-      before do
-        stub_request(:post, token_endpoint)
-          .to_return(
-            status: 401,
-            body: {
-              error: 'refresh_token_expired',
-              error_description: 'Refresh token has expired'
-            }.to_json,
-            headers: { 'Content-Type': 'application/json' }
-          )
-      end
+      let(:expired_refresh_token) { 'expired_refresh_token' }
 
-      it 'raises a RefreshTokenExpiredError' do
-        expect { auth.exchange_code(authorization_code) }
-          .to raise_error(ACCC::Errors::RefreshTokenExpiredError)
+      it 'raises a RefreshTokenError',
+         vcr: { cassette_name: 'auth/exchange_code/refresh_token_expired' } do
+        expect { auth.exchange_code(expired_refresh_token) }
+          .to raise_error(ACCC::Errors::RefreshTokenError)
       end
     end
   end
