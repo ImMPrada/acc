@@ -12,11 +12,19 @@ gem 'accc'
 
 And then execute:
 
-    $ bundle install
+```bash
+$ bundle install
+```
 
 Or install it yourself as:
 
-    $ gem install accc
+```bash
+$ gem install accc
+```
+
+## Requirements
+
+- Ruby 3.3.6 or higher
 
 ## Usage
 
@@ -25,6 +33,8 @@ First, configure the client with your API key:
 ```ruby
 ACCC.configure do |config|
   config.api_key = 'your_api_key'
+  # Optionally override the base URL
+  # config.base_url = 'https://developer.api.autodesk.com'
 end
 ```
 
@@ -32,10 +42,26 @@ end
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Testing
+
+The test suite uses RSpec. To run all tests:
+
+```bash
+$ bundle exec rspec
+```
+
 ## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b feature/my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature/my-new-feature`)
+5. Create new Pull Request
 
 Bug reports and pull requests are welcome on GitHub.
 
 ## License
 
-The gem is available as open source under the terms of the MIT License. 
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT). 
