@@ -6,10 +6,10 @@ require 'dotenv'
 Dotenv.load
 
 ACCC.configure do |config|
-  config.client_id = ENV.fetch('AUTODESK_CLIENT_ID')
-  config.client_secret = ENV.fetch('AUTODESK_CLIENT_SECRET')
+  config.client_id = ENV.fetch('CLIENT_ID')
+  config.client_secret = ENV.fetch('CLIENT_SECRET')
   config.callback_url = 'http://localhost:9292/oauth/callback'
-  config.scope = 'data:read data:write'
+  config.scope = 'data:read'
 end
 
 class DummyApp < Sinatra::Base
