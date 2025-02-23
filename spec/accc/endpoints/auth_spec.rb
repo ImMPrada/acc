@@ -43,9 +43,9 @@ RSpec.describe ACCC::Endpoints::Auth do
         end
       end
 
-      it 'raises an ArgumentError' do
+      it 'raises a MissingScopeError' do
         expect { auth.authorization_url }.to raise_error(
-          ArgumentError,
+          ACCC::Errors::MissingScopeError,
           'Scope must be configured'
         )
       end
