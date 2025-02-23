@@ -92,24 +92,20 @@ RSpec.describe ACCC::Endpoints::Auth do
         end
       end
 
-      it 'returns an access token' do
-        expect(result['access_token']).not_to be_nil
+      it 'returns a non-nil access token' do
+        expect(result).not_to be_nil
       end
 
-      it 'returns a refresh token' do
-        expect(result['refresh_token']).not_to be_nil
-      end
-
-      it 'returns an expiration time' do
-        expect(result['expires_in']).not_to be_nil
+      it 'returns the same token stored in the instance' do
+        expect(result).to eq(auth.access_token)
       end
 
       it 'updates the instance access token' do
-        expect(auth.access_token).to eq(result['access_token'])
+        expect(auth.access_token).not_to be_nil
       end
 
       it 'updates the instance refresh token' do
-        expect(auth.refresh_token).to eq(result['refresh_token'])
+        expect(auth.refresh_token).not_to be_nil
       end
     end
 
@@ -145,12 +141,22 @@ RSpec.describe ACCC::Endpoints::Auth do
 
     context 'when the response is missing required fields' do
       let(:incomplete_response_code) { 'incomplete' }
+      let!(:result) do
+        VCR.use_cassette('auth/exchange_code/incomplete_response') do
+          auth.exchange_code(incomplete_response_code)
+        end
+      end
 
-      it 'returns the incomplete response without raising error',
-         vcr: { cassette_name: 'auth/exchange_code/incomplete_response' } do
-        result = auth.exchange_code(incomplete_response_code)
-        expect(result['access_token']).to be_nil
-        expect(result['refresh_token']).to be_nil
+      it 'returns nil as access token' do
+        expect(result).to be_nil
+      end
+
+      it 'does not set the instance access token' do
+        expect(auth.access_token).to be_nil
+      end
+
+      it 'does not set the instance refresh token' do
+        expect(auth.refresh_token).to be_nil
       end
     end
 

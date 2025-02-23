@@ -38,10 +38,7 @@ module ACCC
           }
         )
 
-        tokens = handle_json_response(response)
-        @access_token = tokens['access_token']
-        @refresh_token = tokens['refresh_token']
-        tokens
+        handle_token_response(response)
       end
 
       def refresh_tokens
@@ -57,10 +54,15 @@ module ACCC
           }
         )
 
+        handle_token_response(response)
+      end
+
+      private
+
+      def handle_token_response(response)
         tokens = handle_json_response(response)
-        @access_token = tokens['access_token']
         @refresh_token = tokens['refresh_token']
-        tokens
+        @access_token = tokens['access_token']
       end
     end
   end
