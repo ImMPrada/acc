@@ -1,4 +1,9 @@
 AllCops:
+  Exclude:
+    - 'dummy/config.ru'
+
+
+AllCops:
   TargetRubyVersion: 3.3.6
   NewCops: enable
   SuggestExtensions: false
