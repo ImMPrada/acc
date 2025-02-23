@@ -17,12 +17,12 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.glob(%w[
-    lib/**/*
-    bin/*
-    *.gemspec
-    LICENSE.txt
-    README.md
-  ]).reject { |f| File.directory?(f) }
+                          lib/**/*
+                          bin/*
+                          *.gemspec
+                          LICENSE.txt
+                          README.md
+                        ]).reject { |f| File.directory?(f) }
 
   spec.bindir        = 'bin'
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
