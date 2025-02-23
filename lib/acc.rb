@@ -4,28 +4,28 @@ require 'uri'
 require 'json'
 
 # Load base files first
-require_relative 'accc/version'
-require_relative 'accc/configuration'
+require_relative 'acc/version'
+require_relative 'acc/configuration'
 
 # Load error classes
-require_relative 'accc/errors/auth_error'
-Dir.glob(File.join(__dir__, 'accc', 'errors', '*.rb')).each do |file|
+require_relative 'acc/errors/auth_error'
+Dir.glob(File.join(__dir__, 'acc', 'errors', '*.rb')).each do |file|
   next if file.end_with?('auth_error.rb') # Skip already loaded
 
   require_relative file.sub("#{__dir__}/", '')
 end
 
 # Load modules/dependencies first
-require_relative 'accc/endpoints/response_handler'
+require_relative 'acc/endpoints/response_handler'
 
 # Load endpoints last
-Dir.glob(File.join(__dir__, 'accc', 'endpoints', '*.rb')).each do |file|
+Dir.glob(File.join(__dir__, 'acc', 'endpoints', '*.rb')).each do |file|
   next if file.end_with?('response_handler.rb') # Skip already loaded
 
   require_relative file.sub("#{__dir__}/", '')
 end
 
-module ACCC
+module ACC
   @configuration = nil
 
   class << self

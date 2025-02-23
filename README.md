@@ -1,4 +1,4 @@
-# ACCC - Autodesk Construction Cloud Client
+# ACC - Autodesk Construction Cloud Client
 
 A Ruby client for the Autodesk Construction Cloud API.
 
@@ -7,7 +7,7 @@ A Ruby client for the Autodesk Construction Cloud API.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'accc'
+gem 'acc'
 ```
 
 And then execute:
@@ -19,7 +19,7 @@ bundle install
 Or install it yourself as:
 
 ```bash
-gem install accc
+gem install acc
 ```
 
 ## Requirements
@@ -38,7 +38,7 @@ gem install accc
 First, configure the client with your Autodesk APS credentials:
 
 ```ruby
-ACCC.configure do |config|
+ACC.configure do |config|
   config.client_id = ENV['CLIENT_ID']
   config.client_secret = ENV['CLIENT_SECRET']
   config.callback_url = ENV['CALLBACK_URL']
@@ -53,7 +53,7 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 1. Generate the authorization URL:
 
    ```ruby
-   auth = ACCC::Endpoints::Auth.new
+   auth = ACC::Endpoints::Auth.new
    authorization_url = auth.authorization_url
    redirect_to authorization_url
    ```
@@ -62,12 +62,12 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 
    ```ruby
    def oauth_callback
-     auth = ACCC::Endpoints::Auth.new
+     auth = ACC::Endpoints::Auth.new
      access_token = auth.exchange_code(params[:code])
      # Store tokens securely
      session[:access_token] = access_token
      session[:refresh_token] = auth.refresh_token
-   rescue ACCC::Errors::AuthError => e
+   rescue ACC::Errors::AuthError => e
      # Handle authentication errors
      logger.error "Authentication failed: #{e.message}"
      redirect_to auth_failed_path
@@ -78,12 +78,12 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 
    ```ruby
    def refresh_tokens
-     auth = ACCC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+     auth = ACC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
      access_token = auth.refresh_tokens
      # Update stored tokens
      session[:access_token] = access_token
      session[:refresh_token] = auth.refresh_token
-   rescue ACCC::Errors::AuthError => e
+   rescue ACC::Errors::AuthError => e
      # Handle refresh errors
      logger.error "Token refresh failed: #{e.message}"
      redirect_to login_path
@@ -97,13 +97,13 @@ The gem provides specific error classes for different scenarios:
 ```ruby
 begin
   auth.exchange_code(code)
-rescue ACCC::Errors::MissingScopeError
+rescue ACC::Errors::MissingScopeError
   # Handle missing scope configuration
-rescue ACCC::Errors::AccessTokenError
+rescue ACC::Errors::AccessTokenError
   # Handle expired access token
-rescue ACCC::Errors::RefreshTokenError
+rescue ACC::Errors::RefreshTokenError
   # Handle expired refresh token
-rescue ACCC::Errors::AuthError => e
+rescue ACC::Errors::AuthError => e
   # Handle other authentication errors
 end
 ```

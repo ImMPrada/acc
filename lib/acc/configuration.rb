@@ -1,4 +1,4 @@
-module ACCC
+module ACC
   class Configuration
     attr_accessor :client_id, :client_secret, :callback_url, :base_url, :scope
 

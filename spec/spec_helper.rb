@@ -5,7 +5,7 @@ require 'dotenv'
 ENV['CLIENT_ID'] = 'test_client_id'
 ENV['CLIENT_SECRET'] = 'test_client_secret'
 
-require 'accc'
+require 'acc'
 require 'webmock/rspec'
 require 'vcr'
 
@@ -31,7 +31,7 @@ RSpec.configure do |config|
   end
 
   config.before do
-    ACCC.configure do |c|
+    ACC.configure do |c|
       # La configuración se tomará automáticamente de las variables de entorno
     end
   end

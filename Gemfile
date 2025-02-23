@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.3.6'
 
-# Specify your gem's dependencies in accc.gemspec
+# Specify your gem's dependencies in acc.gemspec
 gemspec
 
 group :development do

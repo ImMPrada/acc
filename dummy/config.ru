@@ -1,5 +1,5 @@
 require 'bundler/setup'
-require 'accc'
+require 'acc'
 require 'sinatra'
 require 'dotenv'
 
@@ -7,7 +7,7 @@ Dotenv.load
 
 puts "Using callback URL: #{ENV.fetch('CALLBACK_URL', 'Not configured!')}"
 
-ACCC.configure do |config|
+ACC.configure do |config|
   config.client_id = ENV.fetch('CLIENT_ID')
   config.client_secret = ENV.fetch('CLIENT_SECRET')
   config.callback_url = ENV.fetch('CALLBACK_URL')
@@ -36,33 +36,33 @@ class DummyApp < Sinatra::Base
   end
 
   get '/auth' do
-    auth = ACCC::Endpoints::Auth.new
+    auth = ACC::Endpoints::Auth.new
     url = auth.authorization_url
     puts "Generated authorization URL: #{url}"
     redirect url
   end
 
   get '/autodesk/callback' do
-    auth = ACCC::Endpoints::Auth.new
+    auth = ACC::Endpoints::Auth.new
     access_token = auth.exchange_code(params[:code])
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token
 
     redirect '/'
-  rescue ACCC::Errors::AuthError => e
+  rescue ACC::Errors::AuthError => e
     "Authentication failed: #{e.message}"
   end
 
   get '/refresh' do
     return redirect '/auth' unless session[:refresh_token]
 
-    auth = ACCC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+    auth = ACC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
     access_token = auth.refresh_tokens
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token
 
     redirect '/'
-  rescue ACCC::Errors::AuthError => e
+  rescue ACC::Errors::AuthError => e
     session.clear
     "Token refresh failed: #{e.message}<br><a href='/auth'>Login again</a>"
   end

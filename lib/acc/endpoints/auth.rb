@@ -1,4 +1,4 @@
-module ACCC
+module ACC
   module Endpoints
     class Auth
       include ResponseHandler
@@ -14,27 +14,27 @@ module ACCC
       end
 
       def authorization_url
-        raise Errors::MissingScopeError, 'Scope must be configured' unless ACCC.configuration.scope
+        raise Errors::MissingScopeError, 'Scope must be configured' unless ACC.configuration.scope
 
         params = {
-          client_id: ACCC.configuration.client_id,
+          client_id: ACC.configuration.client_id,
           response_type: 'code',
-          redirect_uri: ACCC.configuration.callback_url,
-          scope: ACCC.configuration.scope
+          redirect_uri: ACC.configuration.callback_url,
+          scope: ACC.configuration.scope
         }
 
-        "#{ACCC.configuration.base_url}#{AUTHORIZE_ENDPOINT}?#{URI.encode_www_form(params)}"
+        "#{ACC.configuration.base_url}#{AUTHORIZE_ENDPOINT}?#{URI.encode_www_form(params)}"
       end
 
       def exchange_code(code)
         response = Faraday.post(
-          "#{ACCC.configuration.base_url}#{TOKEN_ENDPOINT}",
+          "#{ACC.configuration.base_url}#{TOKEN_ENDPOINT}",
           {
-            client_id: ACCC.configuration.client_id,
-            client_secret: ACCC.configuration.client_secret,
+            client_id: ACC.configuration.client_id,
+            client_secret: ACC.configuration.client_secret,
             grant_type: 'authorization_code',
             code: code,
-            redirect_uri: ACCC.configuration.callback_url
+            redirect_uri: ACC.configuration.callback_url
           }
         )
 
@@ -45,10 +45,10 @@ module ACCC
         raise Errors::MissingRefreshTokenError unless @refresh_token
 
         response = Faraday.post(
-          "#{ACCC.configuration.base_url}#{TOKEN_ENDPOINT}",
+          "#{ACC.configuration.base_url}#{TOKEN_ENDPOINT}",
           {
-            client_id: ACCC.configuration.client_id,
-            client_secret: ACCC.configuration.client_secret,
+            client_id: ACC.configuration.client_id,
+            client_secret: ACC.configuration.client_secret,
             grant_type: 'refresh_token',
             refresh_token: @refresh_token
           }

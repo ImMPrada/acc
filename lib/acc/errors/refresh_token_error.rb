@@ -1,4 +1,4 @@
-module ACCC
+module ACC
   module Errors
     class RefreshTokenError < AuthError
       def message

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ACCC::Endpoints::Auth do
+RSpec.describe ACC::Endpoints::Auth do
   let(:client_id) { 'test_client_id' }
   let(:client_secret) { 'test_client_secret' }
   let(:callback_url) { 'https://example.com/callback' }
@@ -9,7 +9,7 @@ RSpec.describe ACCC::Endpoints::Auth do
   let(:auth) { described_class.new }
 
   before do
-    ACCC.configure do |config|
+    ACC.configure do |config|
       config.client_id = client_id
       config.client_secret = client_secret
       config.callback_url = callback_url
@@ -38,14 +38,14 @@ RSpec.describe ACCC::Endpoints::Auth do
 
     context 'when scope is not configured' do
       before do
-        ACCC.configure do |config|
+        ACC.configure do |config|
           config.scope = nil
         end
       end
 
       it 'raises a MissingScopeError' do
         expect { auth.authorization_url }.to raise_error(
-          ACCC::Errors::MissingScopeError,
+          ACC::Errors::MissingScopeError,
           'Scope must be configured'
         )
       end
@@ -53,7 +53,7 @@ RSpec.describe ACCC::Endpoints::Auth do
 
     context 'when client_id is not configured' do
       before do
-        ACCC.configure do |config|
+        ACC.configure do |config|
           config.client_id = nil
         end
       end
@@ -68,7 +68,7 @@ RSpec.describe ACCC::Endpoints::Auth do
 
     context 'when callback_url is not configured' do
       before do
-        ACCC.configure do |config|
+        ACC.configure do |config|
           config.callback_url = nil
         end
       end
@@ -115,7 +115,7 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises an error with invalid grant message',
          vcr: { cassette_name: 'auth/exchange_code/invalid_grant' } do
         expect { auth.exchange_code(invalid_code) }
-          .to raise_error(ACCC::Errors::AuthError, /Invalid authorization code/)
+          .to raise_error(ACC::Errors::AuthError, /Invalid authorization code/)
       end
     end
 
@@ -125,7 +125,7 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises an AuthError',
          vcr: { cassette_name: 'auth/exchange_code/invalid_json' } do
         expect { auth.exchange_code(invalid_json_code) }
-          .to raise_error(ACCC::Errors::AuthError, /Invalid error response/)
+          .to raise_error(ACC::Errors::AuthError, /Invalid error response/)
       end
     end
 
@@ -135,7 +135,7 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises an AuthError',
          vcr: { cassette_name: 'auth/exchange_code/server_error' } do
         expect { auth.exchange_code(server_error_code) }
-          .to raise_error(ACCC::Errors::AuthError, /Request failed/)
+          .to raise_error(ACC::Errors::AuthError, /Request failed/)
       end
     end
 
@@ -166,7 +166,7 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises an AccessTokenError',
          vcr: { cassette_name: 'auth/exchange_code/token_expired' } do
         expect { auth.exchange_code(expired_token) }
-          .to raise_error(ACCC::Errors::AccessTokenError)
+          .to raise_error(ACC::Errors::AccessTokenError)
       end
     end
 
@@ -176,7 +176,7 @@ RSpec.describe ACCC::Endpoints::Auth do
       it 'raises a RefreshTokenError',
          vcr: { cassette_name: 'auth/exchange_code/refresh_token_expired' } do
         expect { auth.exchange_code(expired_refresh_token) }
-          .to raise_error(ACCC::Errors::RefreshTokenError)
+          .to raise_error(ACC::Errors::RefreshTokenError)
       end
     end
   end

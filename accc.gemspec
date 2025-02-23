@@ -1,16 +1,16 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'accc/version'
+require 'acc/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'accc'
-  spec.version       = ACCC::VERSION
+  spec.name          = 'acc'
+  spec.version       = ACC::VERSION
   spec.authors       = ['immprada']
   spec.email         = ['im.mprada@gmail.com']
 
   spec.summary       = 'Ruby client for Autodesk Construction Cloud API'
   spec.description   = 'Ruby client library for interacting with the Autodesk Construction Cloud API'
-  spec.homepage      = 'https://github.com/immprada/accc'
+  spec.homepage      = 'https://github.com/immprada/acc'
   spec.license       = 'MIT'
 
   spec.required_ruby_version = '>= 3.3.6'

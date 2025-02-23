@@ -9,7 +9,7 @@ access to the application.
 First, configure your application with the credentials from Autodesk APS:
 
 ```ruby
-ACCC.configure do |config|
+ACC.configure do |config|
   config.client_id = 'your_client_id'
   config.client_secret = 'your_client_secret'
   config.callback_url = 'your_callback_url'  # Must match APS registration
@@ -24,7 +24,7 @@ end
 Generate the URL where users will be redirected to authorize your application:
 
 ```ruby
-auth = ACCC::Endpoints::Auth.new
+auth = ACC::Endpoints::Auth.new
 authorization_url = auth.authorization_url
 # Redirect user to this URL
 ```
@@ -36,16 +36,16 @@ After the user authorizes your application, they will be redirected back to your
 refresh tokens:
 
 ```ruby
-auth = ACCC::Endpoints::Auth.new
+auth = ACC::Endpoints::Auth.new
 begin
   tokens = auth.exchange_code(params[:code])
   access_token = tokens['access_token']
   refresh_token = tokens['refresh_token']
-rescue ACCC::Errors::AccessTokenExpiredError
+rescue ACC::Errors::AccessTokenExpiredError
   # Handle expired access token
-rescue ACCC::Errors::RefreshTokenExpiredError
+rescue ACC::Errors::RefreshTokenExpiredError
   # Handle expired refresh token, redirect to re-auth
-rescue ACCC::Errors::Error => e
+rescue ACC::Errors::Error => e
   # Handle other authentication errors
 end
 ```
@@ -65,9 +65,9 @@ Common scopes include:
 
 The authentication process can raise several types of errors:
 
-* `ACCC::Errors::AccessTokenExpiredError` - When the access token has expired
-* `ACCC::Errors::RefreshTokenExpiredError` - When the refresh token has expired
-* `ACCC::Errors::Error` - Base error class for other authentication errors
+* `ACC::Errors::AccessTokenExpiredError` - When the access token has expired
+* `ACC::Errors::RefreshTokenExpiredError` - When the refresh token has expired
+* `ACC::Errors::Error` - Base error class for other authentication errors
 
 ## Example Implementation
 

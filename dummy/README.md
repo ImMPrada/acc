@@ -1,6 +1,6 @@
-# ACCC Dummy Application
+# ACC Dummy Application
 
-This is a simple Sinatra application that demonstrates the usage of the ACCC gem
+This is a simple Sinatra application that demonstrates the usage of the ACC gem
 for authentication with Autodesk Construction Cloud API.
 
 ## Setup
