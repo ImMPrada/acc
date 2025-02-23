@@ -1,10 +1,15 @@
 require 'zeitwerk'
 require 'faraday'
 require 'faraday/multipart'
-require_relative 'accc/configuration'
+require 'uri'
+require 'json'
 
 module ACCC
-  class Error < StandardError; end
+  module Errors
+    class Error < StandardError; end
+  end
+
+  module Endpoints; end
 
   @configuration = nil
 
@@ -18,10 +23,16 @@ module ACCC
     @configuration.client_secret = ENV['CLIENT_SECRET'] if ENV['CLIENT_SECRET']
     yield(@configuration) if block_given?
   end
-
-  # Initialize the loader
-  loader = Zeitwerk::Loader.for_gem
-  loader.setup
 end
 
-require 'accc/version'
+require_relative 'accc/version'
+require_relative 'accc/configuration'
+require_relative 'accc/errors/access_token_error'
+require_relative 'accc/errors/refresh_token_error'
+require_relative 'accc/endpoints/response_handler'
+require_relative 'accc/endpoints/auth'
+
+# Initialize the loader
+loader = Zeitwerk::Loader.for_gem
+loader.push_dir("#{__dir__}/accc")
+loader.setup
