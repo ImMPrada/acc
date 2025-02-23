@@ -5,15 +5,13 @@ require 'dotenv'
 
 Dotenv.load
 
-CALLBACK_URL = 'http://localhost:3000/autodesk/callback'.freeze
-
-puts "Using callback URL: #{CALLBACK_URL}"
+puts "Using callback URL: #{ENV.fetch('CALLBACK_URL', 'Not configured!')}"
 
 ACCC.configure do |config|
   config.client_id = ENV.fetch('CLIENT_ID')
   config.client_secret = ENV.fetch('CLIENT_SECRET')
-  config.callback_url = CALLBACK_URL
-  config.scope = 'data:read'
+  config.callback_url = ENV.fetch('CALLBACK_URL')
+  config.scope = ENV.fetch('SCOPE', 'data:read')
 end
 
 class DummyApp < Sinatra::Base
@@ -32,7 +30,7 @@ class DummyApp < Sinatra::Base
       <<~HTML
         <h1>Welcome</h1>
         <p><a href="/auth">Login with Autodesk</a></p>
-        <p>Callback URL configured: #{CALLBACK_URL}</p>
+        <p>Callback URL configured: #{ENV['CALLBACK_URL']}</p>
       HTML
     end
   end

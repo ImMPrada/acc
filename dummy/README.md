@@ -5,12 +5,17 @@ authentication with Autodesk Construction Cloud API.
 
 ## Setup
 
-1. Create a `.env` file in the dummy directory with your Autodesk APS credentials:
+1. Create a `.env` file in the dummy directory with your configuration:
 
 ```env
 CLIENT_ID=your_client_id
 CLIENT_SECRET=your_client_secret
+CALLBACK_URL=http://localhost:3000/autodesk/callback
+SCOPE=data:read
 ```
+
+Note: Make sure the `CALLBACK_URL` matches the callback URL configured in your
+Autodesk APS application settings.
 
 2. Install dependencies:
 
@@ -61,18 +66,18 @@ The application demonstrates proper error handling for various scenarios:
 
 ### Testing Error Handling
 
-- Modify your client credentials in `.env` to test authentication failures
+- Modify your credentials in `.env` to test authentication failures
 - Clear your session cookies to test re-authentication
 - Try refreshing with an invalid refresh token
 
 ## Configuration
 
-The application is configured with these default settings:
+The application is configured through environment variables:
 
-- Callback URL: http://localhost:3000/autodesk/callback
-- Scope: data:read
-
-To modify these settings, edit the `config.ru` file.
+- `CLIENT_ID` - Your Autodesk APS Client ID
+- `CLIENT_SECRET` - Your Autodesk APS Client Secret
+- `CALLBACK_URL` - The OAuth callback URL (must match APS settings)
+- `SCOPE` - The requested permissions (defaults to 'data:read')
 
 ## Endpoints
 
