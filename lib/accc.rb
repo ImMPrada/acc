@@ -1,10 +1,10 @@
-require "zeitwerk"
-require "faraday"
-require "faraday/multipart"
+require 'zeitwerk'
+require 'faraday'
+require 'faraday/multipart'
 
 module ACCC
   class Error < StandardError; end
-  
+
   class << self
     attr_accessor :configuration
   end
@@ -19,4 +19,4 @@ module ACCC
   loader.setup
 end
 
-require "accc/version" 
+require 'accc/version'
