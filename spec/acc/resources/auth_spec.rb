@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ACC::Endpoints::Auth do
+RSpec.describe ACC::Resources::Auth do
   let(:client_id) { 'test_client_id' }
   let(:client_secret) { 'test_client_secret' }
   let(:callback_url) { 'https://example.com/callback' }

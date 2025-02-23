@@ -36,14 +36,14 @@ class DummyApp < Sinatra::Base
   end
 
   get '/auth' do
-    auth = ACC::Endpoints::Auth.new
+    auth = ACC::Resources::Auth.new
     url = auth.authorization_url
     puts "Generated authorization URL: #{url}"
     redirect url
   end
 
   get '/autodesk/callback' do
-    auth = ACC::Endpoints::Auth.new
+    auth = ACC::Resources::Auth.new
     access_token = auth.exchange_code(params[:code])
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token
@@ -56,7 +56,7 @@ class DummyApp < Sinatra::Base
   get '/refresh' do
     return redirect '/auth' unless session[:refresh_token]
 
-    auth = ACC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+    auth = ACC::Resources::Auth.new(refresh_token: session[:refresh_token])
     access_token = auth.refresh_tokens
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token

@@ -79,7 +79,7 @@ The application is configured through environment variables:
 - `CALLBACK_URL` - The OAuth callback URL (must match APS settings)
 - `SCOPE` - The requested permissions (defaults to 'data:read')
 
-## Endpoints
+## Resources
 
 - `GET /` - Home page, shows login link or current tokens
 - `GET /auth` - Initiates the OAuth flow

@@ -53,7 +53,7 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 1. Generate the authorization URL:
 
    ```ruby
-   auth = ACC::Endpoints::Auth.new
+   auth = ACC::Resources::Auth.new
    authorization_url = auth.authorization_url
    redirect_to authorization_url
    ```
@@ -62,7 +62,7 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 
    ```ruby
    def oauth_callback
-     auth = ACC::Endpoints::Auth.new
+     auth = ACC::Resources::Auth.new
      access_token = auth.exchange_code(params[:code])
      # Store tokens securely
      session[:access_token] = access_token
@@ -78,7 +78,7 @@ The gem implements OAuth 2.0 with 3-legged authentication. Here's how to use it:
 
    ```ruby
    def refresh_tokens
-     auth = ACC::Endpoints::Auth.new(refresh_token: session[:refresh_token])
+     auth = ACC::Resources::Auth.new(refresh_token: session[:refresh_token])
      access_token = auth.refresh_tokens
      # Update stored tokens
      session[:access_token] = access_token

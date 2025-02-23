@@ -16,10 +16,10 @@ Dir.glob(File.join(__dir__, 'acc', 'errors', '*.rb')).each do |file|
 end
 
 # Load modules/dependencies first
-require_relative 'acc/endpoints/response_handler'
+require_relative 'acc/resources/response_handler'
 
 # Load endpoints last
-Dir.glob(File.join(__dir__, 'acc', 'endpoints', '*.rb')).each do |file|
+Dir.glob(File.join(__dir__, 'acc', 'resources', '*.rb')).each do |file|
   next if file.end_with?('response_handler.rb') # Skip already loaded
 
   require_relative file.sub("#{__dir__}/", '')

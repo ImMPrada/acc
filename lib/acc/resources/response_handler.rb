@@ -1,5 +1,5 @@
 module ACC
-  module Endpoints
+  module Resources
     module ResponseHandler
       private
 

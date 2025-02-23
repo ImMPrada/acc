@@ -1,5 +1,5 @@
 module ACC
-  module Endpoints
+  module Resources
     class Auth
       include ResponseHandler
 

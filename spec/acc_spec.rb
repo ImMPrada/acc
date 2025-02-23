@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ACC do
+RSpec.describe ACC::Resources do
   describe 'version' do
     it 'has a version number' do
       expect(described_class::VERSION).not_to be_nil
