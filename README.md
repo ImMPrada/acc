@@ -123,6 +123,16 @@ Common scopes include:
 The gem includes a dummy Sinatra application that demonstrates the complete
 authentication flow. See [dummy/README.md](dummy/README.md) for details.
 
+## External Resources 📚
+
+Useful documentation and references for working with the Autodesk Construction Cloud API:
+
+| Resource | Description |
+|----------|-------------|
+| [Three-Legged Token Tutorial](https://aps.autodesk.com/en/docs/oauth/v2/tutorials/get-3-legged-token/) | Comprehensive guide on implementing OAuth 2.0 three-legged authentication |
+| [Rate Limits Documentation](https://aps.autodesk.com/en/docs/acc/v1/overview/rate-limits/forge-rate-limits/) | Important information about API rate limits and best practices |
+| [Issues API Reference](https://aps.autodesk.com/en/docs/acc/v1/reference/http/issues-issues-GET/) | API reference documentation for retrieving issues from projects |
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run

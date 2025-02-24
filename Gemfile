@@ -7,6 +7,7 @@ gemspec
 
 group :development do
   gem 'bundler', '~> 2.0'
+  gem 'mdl', '~> 0.13.0'
   gem 'rake', '~> 13.0'
   gem 'rubocop', '~> 1.72'
   gem 'rubocop-rake'
@@ -20,7 +21,5 @@ group :test do
 end
 
 group :development, :test do
-  gem 'dotenv'
+  gem 'dotenv', '~> 2.8'
 end
-
-gem 'mdl', '~> 0.13.0'

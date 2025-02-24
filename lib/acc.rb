@@ -6,6 +6,7 @@ require 'json'
 # Load base files first
 require_relative 'acc/version'
 require_relative 'acc/configuration'
+require_relative 'acc/errors'
 
 # Load error classes
 require_relative 'acc/errors/auth_error'
@@ -16,6 +17,7 @@ Dir.glob(File.join(__dir__, 'acc', 'errors', '*.rb')).each do |file|
 end
 
 # Load modules/dependencies first
+require_relative 'acc/resources'
 require_relative 'acc/resources/response_handler'
 
 # Load endpoints last

@@ -1,0 +1,45 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://developer.api.autodesk.com/authentication/v2/token
+    body:
+      encoding: UTF-8
+      string: client_id=<CLIENT_ID>&client_secret=<CLIENT_SECRET>&code=server_error&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Sun, 23 Feb 2025 21:43:46 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '202'
+      Connection:
+      - keep-alive
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - a4908938-20b6-44f4-85c6-f217fecc2f46
+    body:
+      encoding: UTF-8
+      string: '{ "developerMessage":"The client_id specified does not have access
+        to the api product", "moreInfo": "https://aps.autodesk.com/en/docs/oauth/v2/developers_guide/error_handling/",
+        "errorCode": "AUTH-001"}'
+  recorded_at: Sun, 23 Feb 2025 21:43:45 GMT
+recorded_with: VCR 6.3.1
