@@ -1,6 +1,6 @@
 require 'bundler/setup'
 require 'acc'
-require 'acc/resources/construction_cloud'
+require 'acc/clients/construction_cloud/issues'
 require 'sinatra'
 require 'dotenv'
 
@@ -47,12 +47,12 @@ class DummyApp < Sinatra::Base
     return redirect '/auth' unless session[:access_token]
     return 'Project ID is required' unless params[:project_id]
 
-    auth = ACC::Resources::Auth.new(
+    auth = ACC::Clients::Auth.new(
       access_token: session[:access_token],
       refresh_token: session[:refresh_token]
     )
 
-    issues = ACC::Resources::ConstructionCloud::Issues::Index.new(auth, params[:project_id])
+    issues = ACC::Clients::ConstructionCloud::Issues.new(auth, params[:project_id])
     results = issues.all_paginated
 
     <<~HTML
@@ -83,14 +83,14 @@ class DummyApp < Sinatra::Base
   end
 
   get '/auth' do
-    auth = ACC::Resources::Auth.new
+    auth = ACC::Clients::Auth.new
     url = auth.authorization_url
     puts "Generated authorization URL: #{url}"
     redirect url
   end
 
   get '/autodesk/callback' do
-    auth = ACC::Resources::Auth.new
+    auth = ACC::Clients::Auth.new
     access_token = auth.exchange_code(params[:code])
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token
@@ -103,7 +103,7 @@ class DummyApp < Sinatra::Base
   get '/refresh' do
     return redirect '/auth' unless session[:refresh_token]
 
-    auth = ACC::Resources::Auth.new(refresh_token: session[:refresh_token])
+    auth = ACC::Clients::Auth.new(refresh_token: session[:refresh_token])
     access_token = auth.refresh_tokens
     session[:access_token] = access_token
     session[:refresh_token] = auth.refresh_token

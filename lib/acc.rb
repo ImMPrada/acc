@@ -3,29 +3,27 @@ require 'faraday/multipart'
 require 'uri'
 require 'json'
 
-# Load base files first
+# Carga el cargador de Zeitwerk
+require_relative 'acc/zeitwerk_loader'
+
+# Cargar archivos base explícitamente
 require_relative 'acc/version'
 require_relative 'acc/configuration'
 require_relative 'acc/errors'
 
-# Load error classes
-require_relative 'acc/errors/auth_error'
-Dir.glob(File.join(__dir__, 'acc', 'errors', '*.rb')).each do |file|
-  next if file.end_with?('auth_error.rb') # Skip already loaded
+# Cargar módulos principales
+require_relative 'acc/http/response_handler'
+require_relative 'acc/http/client'
+require_relative 'acc/utils/paginated'
+require_relative 'acc/clients/base'
+require_relative 'acc/clients'
+require_relative 'acc/clients/auth'
+require_relative 'acc/clients/construction_cloud/base'
+require_relative 'acc/clients/construction_cloud/issues/index'
+require_relative 'acc/clients/construction_cloud/issues/me'
 
-  require_relative file.sub("#{__dir__}/", '')
-end
-
-# Load modules/dependencies first
-require_relative 'acc/resources'
-require_relative 'acc/resources/response_handler'
-
-# Load endpoints last
-Dir.glob(File.join(__dir__, 'acc', 'resources', '*.rb')).each do |file|
-  next if file.end_with?('response_handler.rb') # Skip already loaded
-
-  require_relative file.sub("#{__dir__}/", '')
-end
+# Configura Zeitwerk para autocargar el resto de las clases
+ACC::ZeitwerkLoader.setup
 
 module ACC
   @configuration = nil
