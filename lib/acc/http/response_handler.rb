@@ -1,5 +1,5 @@
 module ACC
-  module Resources
+  module HTTP
     module ResponseHandler
       private
 

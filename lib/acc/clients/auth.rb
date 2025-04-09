@@ -1,7 +1,7 @@
 module ACC
-  module Resources
+  module Clients
     class Auth
-      include ResponseHandler
+      include HTTP::ResponseHandler
 
       TOKEN_ENDPOINT = '/authentication/v2/token'.freeze
       AUTHORIZE_ENDPOINT = '/authentication/v2/authorize'.freeze
